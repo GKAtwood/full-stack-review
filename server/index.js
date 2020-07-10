@@ -14,6 +14,12 @@ const express = require('express'),
 
 app.use(express.json());
 
+app.use(session({
+    resave: false,
+    saveUninitialized: true,
+    secret: SESSION_SECRET,
+    cookie: {maxAge: 1000 * 60 * 60 * 24 * 365}
+}));
 
 //Recently massive updated, so passing a connection string is now done like below.
 //Remember to NOT include ?ssl=true to your connection string in you .env.
@@ -24,6 +30,11 @@ massive({
     app.set('db', db);
     console.log('db connected');
 });
+
+//auth endpoints
+app.post('/api/register', authCtrl.register);
+app.post('/api/login', authCtrl.login);
+app.get('/api/logout', authCtrl.logout);
 
 //post endpoints
 app.post('/api/post', mainCtrl.createPost);

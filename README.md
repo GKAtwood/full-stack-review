@@ -9,6 +9,7 @@
 
 ## Backend
 * express
+* dotenv
 * massive
 * express-session
 * bcryptjs

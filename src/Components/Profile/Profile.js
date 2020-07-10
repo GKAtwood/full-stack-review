@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
-import './Profile.css';
+import {connect} from 'react-redux';
+import {getUser, clearUser} from '../../redux/reducer';
 import axios from 'axios';
+import './Profile.css';
 
 class Profile extends Component {
     constructor(props){
@@ -8,6 +10,12 @@ class Profile extends Component {
         this.state = {
             username: '',
             editView: false
+        }
+    }
+
+    componentDidMount(){
+        if(!this.props.user.email){
+            this.props.history.push('/');
         }
     }
 
@@ -30,6 +38,17 @@ class Profile extends Component {
         .catch(err => console.log(err));
     }
 
+    handleLogout = () => {
+        axios.get('/api/logout')
+        .then(() => {
+            //clear the user from redux
+            this.props.clearUser();
+            //route the user back to landing
+            this.props.history.push('/');
+        })
+        .catch(err => console.log(err))
+    }
+
     render(){
         return (
             <div className='profile'>
@@ -48,10 +67,12 @@ class Profile extends Component {
                     <button id='edit-button' onClick={this.updateUsername}>Submit</button>
                    </div>)}
                 <h2>{this.props.user.email}</h2>
-                <button>Logout</button>
+                <button onClick={this.handleLogout}>Logout</button>
             </div>
         )
     }
 }
 
-export default Profile;
+const mapStateToProps = reduxState => reduxState;
+
+export default connect(mapStateToProps, {getUser, clearUser})(Profile);
